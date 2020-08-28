@@ -24,24 +24,24 @@ public class Branch {
     }
 
     public void printCustomers(ArrayList<Customer> customerList) {
+
         for (int i = 0; i < customerArrayList.size(); i++) {
             System.out.println(customerArrayList.get(i).getName());
         }
     }
 
+
     public void printCustomersWithTransactions(Customer customer) {
         int count = 0;
-        for (int i = 0; i < customerArrayList.size(); i++) {
+        System.out.println("Customer " + customer.getName() + " has " + customer.getTransactions().size() + " transaction ");
 
-            System.out.println("Customer " + customer.getName() + " has " + customer.getTransactions().size() + " transaction ");
+        ArrayList<Double> transactions = customer.getTransactions();
 
-            ArrayList<Double> transactions = customer.getTransactions();
+        for (int j = 0; j < transactions.size(); j++) {
+            count++;
+            double transaction = transactions.get(j);
+            System.out.println((j + 1) + ". Transaction: " + transaction + ", ");
 
-            for (int j = 0; j < transactions.size(); j++) {
-                count++;
-                double transaction = transactions.get(j);
-                System.out.print((j + 1) + ". " + transaction + ", ");
-            }
 
         }
     }
@@ -52,16 +52,17 @@ public class Branch {
     }
 
     public Customer addCustomer(String name) {
-        if (findCustomer(name) >= 0) {
-            System.out.println("Customer already exists");
-            return null;
+        if (findCustomer(name) <= 0) {
+            Customer customer = Customer.createCustomer(name);
+            customerArrayList.add(customer);
+            System.out.println("Customer successfully added to branch " + getName());
+
+            return customer;
         }
 
-        Customer customer = Customer.createCustomer(name);
-        customerArrayList.add(customer);
-        System.out.println("Customer successfully added");
 
-        return customer;
+        System.out.println("Customer already exists");
+        return null;
     }
 
     public void addCustomer(Customer customer) {
@@ -69,9 +70,22 @@ public class Branch {
     }
 
     public void transaction(Customer customer, double amount) {
-        if (findCustomer(name) >= 0) {
+        if (findCustomer(customer.getName()) >= 0) {
 
             if (customer.transaction(amount)) {
+                transactionsInBranch.add(amount);
+                System.out.println("Transaction successful");
+
+            } else {
+                System.out.println("Transaction not successful");
+            }
+        }
+    }
+
+    public void transaction(String customer, double amount) {
+        if (findCustomer(customer) >= 0) {
+            Customer existingCustomer = customerArrayList.get(findCustomer(customer));
+            if (existingCustomer.transaction(amount)) {
                 transactionsInBranch.add(amount);
                 System.out.println("Transaction successful");
 
@@ -85,10 +99,8 @@ public class Branch {
         for (int i = 0; i < customerArrayList.size(); i++) {
             String customerName = customerArrayList.get(i).getName();
 
-            if (!customerName.equals(name)) {
-                System.out.println("Customer found");
+            if (customerName.equals(name)) {
                 return i;
-
             }
         }
         return -1;
